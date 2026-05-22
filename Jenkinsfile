@@ -1,4 +1,4 @@
-pipeline {
+﻿pipeline {
     agent any
 
     tools {
@@ -7,20 +7,15 @@ pipeline {
     }
 
     environment {
-        DOCKER_IMAGE     = "boardgame-app"
-        DOCKER_TAG       = "${BUILD_NUMBER}"
-        SONAR_PROJECT    = "BoardgameListingWebApp"
-        NEXUS_VERSION    = "nexus3"
-        NEXUS_PROTOCOL   = "http"
-        NEXUS_URL        = "localhost:8081"
-        NEXUS_REPO       = "maven-releases"
+        DOCKER_IMAGE  = "boardgame-app"
+        SONAR_PROJECT = "BoardgameListingWebApp"
     }
 
     stages {
 
         stage('Build') {
             steps {
-                sh 'mvn clean package -DskipTests'
+                bat 'mvn clean package -DskipTests'
             }
             post {
                 success {
@@ -31,7 +26,7 @@ pipeline {
 
         stage('Test') {
             steps {
-                sh 'mvn test'
+                bat 'mvn test'
             }
             post {
                 always {
@@ -43,11 +38,7 @@ pipeline {
         stage('Code Quality') {
             steps {
                 withSonarQubeEnv('SonarQube-Server') {
-                    sh """
-                        mvn sonar:sonar \
-                          -Dsonar.projectKey=${SONAR_PROJECT} \
-                          -Dsonar.projectName='BoardGame Listing Web App'
-                    """
+                    bat "mvn sonar:sonar -Dsonar.projectKey=%SONAR_PROJECT% -Dsonar.projectName=BoardGameApp"
                 }
             }
         }
@@ -69,32 +60,30 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    bat 'docker rm -f boardgame-staging || true'
-                    bat "docker build -t %DOCKER_IMAGE%:%DOCKER_TAG% ."
-                    bat "docker run -d --name boardgame-staging -p 8082:8080 %DOCKER_IMAGE%:%DOCKER_TAG%"
+                    bat 'docker rm -f boardgame-staging || exit 0'
+                    bat "docker build -t boardgame-app:%BUILD_NUMBER% ."
+                    bat "docker run -d --name boardgame-staging -p 8082:8080 boardgame-app:%BUILD_NUMBER%"
                 }
             }
         }
 
         stage('Release') {
             steps {
-                script {
-                    nexusArtifactUploader(
-                        nexusVersion: 'nexus3',
-                        protocol: 'http',
-                        nexusUrl: 'localhost:8081',
-                        groupId: 'com.javaproject',
-                        version: "0.0.${BUILD_NUMBER}",
-                        repository: 'maven-releases',
-                        credentialsId: 'nexus-credentials',
-                        artifacts: [[
-                            artifactId: 'database_service_project',
-                            classifier: '',
-                            file: "target/database_service_project-0.0.1-SNAPSHOT.jar",
-                            type: 'jar'
-                        ]]
-                    )
-                }
+                nexusArtifactUploader(
+                    nexusVersion: 'nexus3',
+                    protocol: 'http',
+                    nexusUrl: 'localhost:8081',
+                    groupId: 'com.javaproject',
+                    version: "0.0.${BUILD_NUMBER}",
+                    repository: 'maven-releases',
+                    credentialsId: 'nexus-credentials',
+                    artifacts: [[
+                        artifactId: 'database_service_project',
+                        classifier: '',
+                        file: "target/database_service_project-0.0.1-SNAPSHOT.jar",
+                        type: 'jar'
+                    ]]
+                )
             }
         }
 
@@ -102,18 +91,10 @@ pipeline {
 
     post {
         success {
-            mail(
-                to: 'team@example.com',
-                subject: "BUILD #${BUILD_NUMBER} PASSED",
-                body: "All stages completed successfully.\nBuild: ${BUILD_URL}"
-            )
+            echo "Pipeline completed successfully"
         }
         failure {
-            mail(
-                to: 'team@example.com',
-                subject: "BUILD #${BUILD_NUMBER} FAILED",
-                body: "A stage has failed. Please review: ${BUILD_URL}"
-            )
+            echo "Pipeline failed"
         }
         always {
             cleanWs()
