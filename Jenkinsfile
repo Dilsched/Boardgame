@@ -45,8 +45,9 @@ pipeline {
 
         stage('Security') {
             steps {
+                bat 'if not exist dependency-check-report mkdir dependency-check-report'
                 dependencyCheck(
-                    additionalArguments: '--scan target/ --format HTML --format XML --out dependency-check-report',
+                    additionalArguments: '--scan target/ --format HTML --format XML --out dependency-check-report --noupdate',
                     odcInstallation: 'OWASP-DC'
                 )
             }
@@ -80,7 +81,7 @@ pipeline {
                     artifacts: [[
                         artifactId: 'database_service_project',
                         classifier: '',
-                        file: "target/database_service_project-0.0.1-SNAPSHOT.jar",
+                        file: "target/database_service_project-0.0.5-SNAPSHOT.jar",
                         type: 'jar'
                     ]]
                 )
