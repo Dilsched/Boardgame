@@ -5,7 +5,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/x
 <parent>
 <groupId>org.springframework.boot</groupId>
 <artifactId>spring-boot-starter-parent</artifactId>
-<version>3.2.5</version>
+<version>2.7.18</version>
 <relativePath/>
 </parent>
 <groupId>com.javaproject</groupId>
@@ -15,9 +15,9 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/x
 <description>Project for Spring Boot</description>
 <packaging>jar</packaging>
 <properties>
-<java.version>21</java.version>
-<maven.compiler.source>21</maven.compiler.source>
-<maven.compiler.target>21</maven.compiler.target>
+<java.version>17</java.version>
+<maven.compiler.source>17</maven.compiler.source>
+<maven.compiler.target>17</maven.compiler.target>
 <jacoco.version>0.8.11</jacoco.version>
 <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
 <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
@@ -27,7 +27,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/x
 <dependencies>
 <dependency>
 <groupId>org.thymeleaf.extras</groupId>
-<artifactId>thymeleaf-extras-springsecurity6</artifactId>
+<artifactId>thymeleaf-extras-springsecurity5</artifactId>
 </dependency>
 <dependency>
 <groupId>org.springframework.boot</groupId>
@@ -89,8 +89,8 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/x
 <artifactId>maven-compiler-plugin</artifactId>
 <version>3.13.0</version>
 <configuration>
-<source>21</source>
-<target>21</target>
+<source>17</source>
+<target>17</target>
 </configuration>
 </plugin>
 <plugin>
